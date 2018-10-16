@@ -6,10 +6,13 @@ var spotify = new Spotify(keys.spotify);
 var moment = require('moment');
 var fs = require('fs');
 
-var command = process.argv[2];
+var command1 = process.argv[2];
+var command2 = process.argv.slice(3).join("+");
 
-if (command === "spotify-this-song") {
-    var songName = process.argv.slice(3).join(" ");
+
+
+function spotifyThis() {
+    var songName = command2
     // console.log(songName);
     spotify.search({ type: 'track', query: songName, limit: 1 }, function (err, data) {
         if (err) {
@@ -22,13 +25,23 @@ if (command === "spotify-this-song") {
                 console.log("Preview Link: " + data.tracks.items[0].album.external_urls.spotify);
             })
         }
-        console.log("Artist: " + data.tracks.items[0].album.artists[0].name);
-        console.log("Song Title: " + data.tracks.items[0].name);
-        console.log("Preview Link: " + data.tracks.items[0].album.external_urls.spotify);
+        var artist = data.tracks.items[0].album.artists[0].name
+        var title = data.tracks.items[0].name
+        var link = data.tracks.items[0].album.external_urls.spotify
+        console.log("Artist: " + artist);
+        console.log("Song Title: " + title);
+        console.log("Preview Link: " + link);
+
+        fs.appendFile("log.txt", "***********************DATA********************************" + "\nCommand: " + command1 + "\nSearch: " + command2 + "\nArtist: " + artist + "\nSong Title: " + title + "\nPreview Link: " + link + "\n ", function (err) {
+            if (err) {
+                return console.log(err);
+            }
+        });
     });
 }
-if (command === "concert-this") {
-    var bandName = process.argv.slice(3).join("+");
+
+function concertThis() {
+    var bandName = command2
     // console.log(bandName);
     var queryUrl = "https://rest.bandsintown.com/artists/" + bandName + "/events?app_id=codingbootcamp"
     request(queryUrl, function (err, response, data) {
@@ -38,23 +51,57 @@ if (command === "concert-this") {
         }
         var bP = JSON.parse(data);
         console.log("***********************DATA********************************")
+        fs.appendFile("log.txt", "***********************DATA********************************" + "\nCommand: " + command1 + "\nSearch: " + command2 + "\n***********************************************************\n", function (err) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+
         for (i = 0; i < bP.length; i++) {
-            console.log("Venue: " + bP[i].venue.name)
-            if (bP[i].venue.region === "") {
-                console.log("Location: " + bP[i].venue.city + ", " + bP[i].venue.country)
+            var venue = bP[i].venue.name
+            var region = bP[i].venue.region
+            var country = bP[i].venue.country
+            var city = bP[i].venue.city
+            console.log("Venue: " + venue)
+            fs.appendFile("log.txt", "\nvenue: " + venue, function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+            if (region === "") {
+                console.log("Location: " + city + ", " + country)
+                // fs.appendFile("log.txt", "\nLocation: " + city + ", " + country, function (err) {
+                //     if (err) {
+                //         return console.log(err);
+                //     }
+                // });
             }
             else {
-                console.log("Location: " + bP[i].venue.city + ", " + bP[i].venue.region)
+                console.log("Location: " + city + ", " + region)
+                // fs.appendFile("log.txt", "\nLocation: " + city + ", " + region, function (err) {
+                //     if (err) {
+                //         return console.log(err);
+                //     }
+                // });
             }
             console.log("Date: " + moment(bP[i].datetime).format('L'));
+            // fs.appendFile("log.txt", "\nDate: " + moment(bP[i].datetime).format('L') + "\n ", function (err) {
+            //     if (err) {
+            //         return console.log(err);
+            //     }
+            // });
             console.log("***********************************************************")
-        }
+
+
+
+        };
     });
 };
-if (command === "movie-this") {
-    var movie = process.argv.slice(3).join("+");
+
+function movieThis() {
+    var movie = command2;
     var queryUrl = "http://www.omdbapi.com/?apikey=trilogy&t=" + movie + "";
-    if (queryUrl === "http://www.omdbapi.com/?apikey=trilogy&t="){
+    if (queryUrl === "http://www.omdbapi.com/?apikey=trilogy&t=") {
         queryUrl = "http://www.omdbapi.com/?apikey=trilogy&t=Mr.+Nobody";
     }
     request(queryUrl, function (err, response, data) {
@@ -72,9 +119,50 @@ if (command === "movie-this") {
         console.log("Language: " + mP.Language);
         console.log("Plot: " + mP.Plot);
         console.log("Actors: " + mP.Actors);
+        fs.appendFile("log.txt", "\n***********************DATA********************************" + "\nCommand: " + command1 + "\nSearch: " + movie + "\nTitle: " + mP.Title + "\nYear Released: " + mP.Year + "\nIMDD Rating: " + mP.Ratings[0].Value + "\nRotten Tomatoes Rating: " + mP.Ratings[1].Value + "\nCountries where the movie was produced: " + mP.Country + "\nLanguage: " + mP.Language + "\nPlot: " + mP.Plot + "\nActors: " + mP.Actors + "\n ", function (err) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+        
     })
 }
 
+
+
+function run() {
+    switch (command1) {
+        case "spotify-this-song":
+            spotifyThis();
+            break;
+
+        case "concert-this":
+            concertThis();
+            break;
+
+        case "movie-this":
+            movieThis();
+            break;
+    }
+}
+
+switch (command1) {
+    case "do-what-it-says":
+        fs.readFile("random.txt", "utf8", function (err, data) {
+            if (err) {
+                return console.log(err);
+            }
+            var dataArr = data.split(",");
+            command1 = dataArr[0];
+            command2 = dataArr[1].replace(/"/g, "");
+            run();
+        })
+        break;
+}
+
+
+
+run();
 
 
 
