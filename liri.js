@@ -13,33 +13,52 @@ var command2 = process.argv.slice(3).join("+");
 
 function spotifyThis() {
     var songName = command2
-    // console.log(songName);
-    spotify.search({ type: 'track', query: songName, limit: 1 }, function (err, data) {
-        if (err) {
-            console.log('Error occurred: ' + err);
-            songName = "The Sign Ace of Base";
-            spotify.search({ type: 'track', query: songName, limit: 1 }, function (err, data) {
-                console.log("AN ERROR HAS OCCURED, DEFAULTING TO THE GREATEST SONG EVER!")
-                console.log("Artist: " + data.tracks.items[0].album.artists[0].name);
-                console.log("Song Title: " + data.tracks.items[0].name);
-                console.log("Preview Link: " + data.tracks.items[0].album.external_urls.spotify);
-            })
-        }
-        var artist = data.tracks.items[0].album.artists[0].name
-        var title = data.tracks.items[0].name
-        var link = data.tracks.items[0].album.external_urls.spotify
-        console.log("Artist: " + artist);
-        console.log("Song Title: " + title);
-        console.log("Preview Link: " + link);
-
-        fs.appendFile("log.txt", "***********************DATA********************************" + "\nCommand: " + command1 + "\nSearch: " + command2 + "\nArtist: " + artist + "\nSong Title: " + title + "\nPreview Link: " + link + "\n ", function (err) {
+    if (songName == "") {
+        spotify.search({ type: 'track', query: "The Sign Ace of Base", limit: 1 }, function (err, data) {
             if (err) {
-                return console.log(err);
+                console.log('Error occurred: ' + err);
             }
+            var artist = data.tracks.items[0].album.artists[0].name
+            var title = data.tracks.items[0].name
+            var link = data.tracks.items[0].album.external_urls.spotify
+            console.log("YOU DIDN'T ENTER ANYTHING, DEFAULTING TO THE GREATEST SONG EVER!")
+            console.log("Artist: " + artist);
+            console.log("Song Title: " + title);
+            console.log("Preview Link: " + link);
+
+            fs.appendFile("log.txt", "***********************DATA********************************" + "\nCommand: " + command1 + "\nSearch: " + songName + "\nArtist: " + artist + "\nSong Title: " + title + "\nPreview Link: " + link + "\n ", function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+            })
         });
-    });
+    }
+    else {
+        spotify.search({ type: 'track', query: songName, limit: 1 }, function (err, data) {
+            if (err) {
+                console.log('Error occurred: ' + err);
+
+            }
+            var artist = data.tracks.items[0].album.artists[0].name
+            var title = data.tracks.items[0].name
+            var link = data.tracks.items[0].album.external_urls.spotify
+            var album = data.tracks.items[0].album.name
+            console.log("Artist: " + artist);
+            console.log("Song Title: " + title);
+            console.log("Preview Link: " + link);
+            console.log("Album: " + album)
+
+            fs.appendFile("log.txt", "***********************DATA********************************" + "\nCommand: " + command1 + "\nSearch: " + songName + "\nArtist: " + artist + "\nSong Title: " + title + "\nPreview Link: " + link + "\n ", function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+        });
+    }
 }
 
+    
+        
 function concertThis() {
     var bandName = command2
     // console.log(bandName);
@@ -50,12 +69,12 @@ function concertThis() {
             console.log('statusCode:', response && response.statusCode);
         }
         var bP = JSON.parse(data);
-        console.log("***********************DATA********************************")
-        fs.appendFile("log.txt", "***********************DATA********************************" + "\nCommand: " + command1 + "\nSearch: " + command2 + "\n***********************************************************\n", function (err) {
-            if (err) {
-                return console.log(err);
-            }
-        });
+        // console.log("***********************DATA********************************")
+        // fs.appendFile("log.txt", "***********************DATA********************************" + "\nCommand: " + command1 + "\nSearch: " + command2 + "\n***********************************************************\n", function (err) {
+        //     if (err) {
+        //         return console.log(err);
+        //     }
+        // });
 
         for (i = 0; i < bP.length; i++) {
             var venue = bP[i].venue.name
@@ -63,11 +82,11 @@ function concertThis() {
             var country = bP[i].venue.country
             var city = bP[i].venue.city
             console.log("Venue: " + venue)
-            fs.appendFile("log.txt", "\nvenue: " + venue, function (err) {
-                if (err) {
-                    return console.log(err);
-                }
-            });
+            // fs.appendFile("log.txt", "\nvenue: " + venue, function (err) {
+            //     if (err) {
+            //         return console.log(err);
+            //     }
+            // });
             if (region === "") {
                 console.log("Location: " + city + ", " + country)
                 // fs.appendFile("log.txt", "\nLocation: " + city + ", " + country, function (err) {
@@ -124,7 +143,7 @@ function movieThis() {
                 return console.log(err);
             }
         });
-        
+
     })
 }
 
