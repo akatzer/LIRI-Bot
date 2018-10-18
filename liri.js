@@ -169,7 +169,7 @@ function movieThis() {
         console.log("***********************DATA********************************")
         console.log("Title: " + mP.Title);
         console.log("Year Released: " + mP.Year);
-        console.log("IMDP Rating: " + mP.Ratings[0].Value);
+        console.log("IMDD Rating: " + mP.Ratings[0].Value);
         console.log("Rotten Tomatoes Rating: " + mP.Ratings[1].Value);
         console.log("Countries where the movie was produced: " + mP.Country);
         console.log("Language: " + mP.Language);
@@ -187,10 +187,10 @@ function movieThis() {
 }
 
 
-//this is the switch that makes the whole thing go.
+//this is the switch that makes the whole thing go, it runs the function that corresponds to the input entered
 function run() {
     switch (command1) {
-
+        
         case "spotify-this-song":
             spotifyThis();
             break;
@@ -205,9 +205,10 @@ function run() {
     }
 }
 
-//this portion runs if do-what-it says
+//this portion runs if do-what-it-says is entered
 switch (command1) {
     case "do-what-it-says":
+        //sends the commands to the log.
         fs.readFile("random.txt", "utf8", function (err, data) {
             if (err) {
                 return console.log(err);
@@ -220,8 +221,7 @@ switch (command1) {
         break;
 }
 
-
-
+//initializes the run function above.
 run();
 
 
