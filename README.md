@@ -15,7 +15,7 @@ Command format <command> <search phrase>:
         - Album
 
 - concert-this <band name>
-    -  This takes the band name entered and runs it through the bands in town API and retuns concert information for that particular band. The following is logged in the terminal:
+    -  This takes the band name entered and runs it through the bands in town API and returns concert information for that particular band. The following is logged in the terminal:
         -   Venue Name
         -   Location of Venue
         -   Date of the Concert
